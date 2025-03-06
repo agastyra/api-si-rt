@@ -1,6 +1,6 @@
 <?php
 
-use App\Api\TokenAbility;
+use App\Enum\TokenAbility;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticateController;
 

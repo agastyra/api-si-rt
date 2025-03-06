@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Api;
+namespace App\Enum;
 
 enum TokenAbility: string
 {
