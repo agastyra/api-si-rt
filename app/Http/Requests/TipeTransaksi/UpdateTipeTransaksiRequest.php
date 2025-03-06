@@ -5,6 +5,7 @@ namespace App\Http\Requests\TipeTransaksi;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class UpdateTipeTransaksiRequest extends FormRequest
 {
@@ -24,8 +25,9 @@ class UpdateTipeTransaksiRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nama" => ["required", "string", "max:100", "min:3", "unique:tipe_transaksis,nama," .
-                $this->tipe_transaksi],
+            "nama" => ["required", "string", "max:100", "min:3", Rule::unique("tipe_transaksis", "nama")
+                    ->ignore($this->tipe_transaksi, "id")
+                    ->whereNull("deleted_at")],
             "jenis" => ["required", "string", "in:Pemasukan,Pengeluaran"],
         ];
     }

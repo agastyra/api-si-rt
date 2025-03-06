@@ -5,6 +5,7 @@ namespace App\Http\Requests\Transaksi;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class StoreTransaksiRequest extends FormRequest
 {
@@ -26,7 +27,10 @@ class StoreTransaksiRequest extends FormRequest
         return [
             "rumah_id" => ["nullable", "exists:rumahs,id"],
             "tanggal_transaksi" => ["required", "date"],
-            "no_transaksi" => ["required", "string", "size:6", "unique:transaksis,no_transaksi"],
+            "no_transaksi" => ["required", "string", "size:6", "unique:transaksis,no_transaksi",
+                Rule::unique("transaksis", "no_transaksi")
+                    ->ignore($this->transaksis)
+                    ->whereNull("deleted_at")],
         ];
     }
 

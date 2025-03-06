@@ -24,6 +24,9 @@ return new class extends Migration
                 ->exists([null, 1,2,3,4,5,6,7,8,9,10,11,12]);
             $table->year('periode_tahun_selesai')->nullable();
             $table->foreignId("created_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId("updated_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
+            $table->string('deletion_token')->default('NA');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

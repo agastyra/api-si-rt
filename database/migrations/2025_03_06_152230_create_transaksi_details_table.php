@@ -20,6 +20,9 @@ return new class extends Migration
             $table->foreignId("transaksi_id")->constrained("transaksis")->cascadeOnUpdate()->restrictOnDelete();
             $table->decimal("nominal", 10, 2);
             $table->foreignId("created_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId("updated_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
+            $table->string('deletion_token')->default('NA')->unique();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

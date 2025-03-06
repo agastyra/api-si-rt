@@ -26,7 +26,9 @@ class UpdateRumahRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "blok" => ["required", "string", "max:5", "min:3", "unique:rumahs,blok," . $this->rumah],
+            "blok" => ["required", "string", "max:5", "min:3", Rule::unique('rumahs', 'blok')
+                ->ignore($this->rumah, "id")
+                ->whereNull("deleted_at")],
             "status_rumah" => ["required", "string", Rule::enum(StatusRumah::class)],
         ];
     }

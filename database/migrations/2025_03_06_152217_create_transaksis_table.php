@@ -15,9 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId("rumah_id")->constrained("rumahs")->cascadeOnUpdate()->restrictOnDelete();
             $table->date("tanggal_transaksi");
-            $table->string("no_transaksi", 6)->unique();
+            $table->string("no_transaksi", 6);
             $table->foreignId("created_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId("updated_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
+            $table->string('deletion_token')->default('NA');
+            $table->softDeletes();
             $table->timestamps();
+
+            $table->unique(["no_transaksi", "deletion_token"]);
         });
     }
 

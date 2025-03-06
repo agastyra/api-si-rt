@@ -13,10 +13,15 @@ return new class extends Migration
     {
         Schema::create('tipe_transaksis', function (Blueprint $table) {
             $table->id();
-            $table->string('nama', 100)->unique();
+            $table->string('nama', 100);
             $table->enum('jenis', ['Pemasukan', 'Pengeluaran']);
             $table->foreignId("created_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId("updated_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
+            $table->string('deletion_token')->default('NA');
+            $table->softDeletes();
             $table->timestamps();
+
+            $table->unique(["nama", "deletion_token"]);
         });
     }
 

@@ -26,11 +26,17 @@ class StorePenghuniRequest extends FormRequest
      */
     public function rules(): array
     {
+
         return [
             "nama_lengkap" => ["required", "string", "max:100", "min:3"],
             "foto_ktp" => ["required", "image", "mimes:jpg,jpeg,png", "max:2048"],
             "status_penghuni" => ["required", "string", Rule::enum(StatusPenghuni::class)],
-            "nomor_telepon" => ["required", "string", "unique:penghunis,nomor_telepon", "max:13"],
+            "nomor_telepon" => [
+                "required", "string",
+                Rule::unique('penghunis', 'nomor_telepon')
+                    ->ignore($this->penghuni)
+                    ->whereNull("deleted_at"),
+                "max:13"],
             "jenis_kelamin" => ["required", "string", "in:Laki-laki,Perempuan"],
             "menikah" => ["required", "boolean"],
         ];
@@ -43,7 +49,7 @@ class StorePenghuniRequest extends FormRequest
             "nama_lengkap.string" => "Nama lengkap harus berupa string",
             "nama_lengkap.max" => "Nama lengkap maksimal 100 karakter",
             "nama_lengkap.min" => "Nama lengkap minimal 3 karakter",
-            "foto_ktp.required" => "Foto KTP harus diisi",
+            "foto_ktp.required" => "Foto KTP harus diupload",
             "foto_ktp.image" => "Foto KTP harus berupa gambar",
             "foto_ktp.mimes" => "Foto KTP harus berupa jpg, jpeg, atau png",
             "foto_ktp.max" => "Foto KTP maksimal 2MB",

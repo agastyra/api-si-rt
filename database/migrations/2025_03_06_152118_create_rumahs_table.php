@@ -13,10 +13,15 @@ return new class extends Migration
     {
         Schema::create('rumahs', function (Blueprint $table) {
             $table->id();
-            $table->string("blok", 5)->unique();
+            $table->string("blok", 5);
             $table->enum("status_rumah", ["Dihuni", "Tidak dihuni"]);
             $table->foreignId("created_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId("updated_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
+            $table->string('deletion_token')->default('NA');
+            $table->softDeletes();
             $table->timestamps();
+
+            $table->unique(["blok", "deletion_token"]);
         });
     }
 
