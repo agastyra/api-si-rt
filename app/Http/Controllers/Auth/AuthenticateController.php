@@ -27,8 +27,8 @@ class AuthenticateController extends Controller
             return response()->json([
                     'message' => 'Successfully Authenticated',
                     'status' => 200,
-                    '$accessToken' => $accessToken,
-                    '$refreshToken' => $refreshToken,
+                    'accessToken' => $accessToken,
+                    'refreshToken' => $refreshToken,
                     'user' => $user]
                 , 200
             );

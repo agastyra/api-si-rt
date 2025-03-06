@@ -11,4 +11,6 @@ Route::post('auth/refresh-token', [AuthenticateController::class, 'refreshToken'
 
 Route::middleware(['auth:sanctum', 'ability:' . TokenAbility::ACCESS_API->value])->group(function () {
     Route::delete("auth/logout", [AuthenticateController::class, "destroy"])->name("api.logout");
+
+    Route::apiResource("penghuni", \App\Http\Controllers\PenghuniController::class);
 });

@@ -3,5 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    abort(403, "Sorry you are forbidden to access this API.");
+    return response()->json([
+        "message" => "Sorry you are forbidden to access this API."
+    ], 403);
 })->name("login");
