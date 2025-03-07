@@ -24,13 +24,13 @@ class TransaksiCollection extends ResourceCollection
     {
         return [
             "message" => $this->message,
-            "data" => $this->collection->transform(function ($transaksi) {
+            "data" => $this->collection->transform(function ($transaksi) use ($request) {
                 return [
                     "id" => $transaksi->id,
                     "no_transaksi" => $transaksi->no_transaksi,
                     "tanggal_transaksi" => $transaksi->tanggal_transaksi,
-                    "rumah" => collect($transaksi->rumah),
-                    "transaksi_detail" => new TransaksiDetailCollection($transaksi->transaksi_detail),
+                    "rumah" => (new RumahCollection(collect([$transaksi->rumah])))->toArray($request)["data"][0] ?? null,
+                    "transaksi_detail" => new TransaksiDetailCollection($transaksi->transaksi_detail) ?? null,
                     "created_by" => $transaksi->created_by,
                     "updated_by" => $transaksi->updated_by
                 ];
