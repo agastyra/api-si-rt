@@ -9,8 +9,8 @@ class RumahCollection extends ResourceCollection
 {
 
     public function __construct(
-        public string $message,
-        $resource
+        $resource,
+        public mixed $message = null
     )
     {
         parent::__construct($resource);

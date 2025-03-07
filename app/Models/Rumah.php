@@ -22,7 +22,7 @@ class Rumah extends Model
         "deletion_token"
     ];
 
-    protected $with = ["penghuniRumah", "transaksi"];
+    protected $with = ["penghuniRumah"];
 
     public function delete(): void
     {
@@ -47,6 +47,6 @@ class Rumah extends Model
 
     public function transaksi(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Transaksi::class);
+        return $this->hasMany(Transaksi::class, "rumah_id");
     }
 }

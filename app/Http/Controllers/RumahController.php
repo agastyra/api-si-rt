@@ -18,7 +18,7 @@ class RumahController extends Controller
         try {
             $allRumah = Rumah::orderBy("blok")
                 ->get();
-            return new RumahCollection("Fetch data 'Rumah' successfully!", $allRumah);
+            return new RumahCollection($allRumah, "Fetch data 'Rumah' successfully!");
         } catch (HttpResponseException $exception) {
             return response()->json([
                 'message' => $exception->getMessage(),
@@ -42,7 +42,7 @@ class RumahController extends Controller
             $data["updated_by"] = auth()->user()->id;
 
             $newRumah = Rumah::create($data)->toArray();
-            return new RumahCollection("Store data 'Rumah' successfully!", $newRumah);
+            return new RumahCollection($newRumah, "Store data 'Rumah' successfully!");
         } catch (\Exception $exception) {
             return response()->json([
                 'message' => "An error occurred while storing 'Rumah' data",
@@ -65,10 +65,11 @@ class RumahController extends Controller
     {
         try {
             $data = $request->all();
+            $data["updated_by"] = auth()->user()->id;
 
             $rumah->update($data);
             $updatedRumah = $rumah->refresh()->toArray();
-            return new RumahCollection("Update data 'Rumah' successfully!", $updatedRumah);
+            return new RumahCollection($updatedRumah, "Update data 'Rumah' successfully!");
         } catch (\Exception $exception) {
             return response()->json([
                 'message' => "An error occurred while updating 'Rumah' data",
