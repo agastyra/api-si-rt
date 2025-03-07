@@ -22,11 +22,25 @@ class Transaksi extends Model
     ];
 
     protected $with = ["transaksi_detail"];
+    protected $cascadeDeletes = ["transaksi_detail"];
 
     public function delete(): void
     {
         $this->update(['deletion_token' => Str::uuid()]);
         parent::delete();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::deleting(function($transaksi) {
+            $transaksi->transaksi_detail()->update(['deletion_token' => Str::uuid()]);
+            $transaksi->transaksi_detail()->delete();
+        });
+        static::restoring(function($transaksi) {
+            $transaksi->transaksi_detail()->update(['deletion_token' => "NA"]);
+            $transaksi->transaksi_detail()->restore();
+        });
     }
 
     public function createdBy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -46,6 +60,6 @@ class Transaksi extends Model
 
     public function rumah(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Rumah::class);
+        return $this->belongsTo(Rumah::class, "rumah_id");
     }
 }

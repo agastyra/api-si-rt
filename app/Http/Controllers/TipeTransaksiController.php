@@ -65,6 +65,7 @@ class TipeTransaksiController extends Controller
     {
         try {
             $data = $request->all();
+            $data["updated_by"] = auth()->user()->id;
 
             $tipeTransaksi->update($data);
             $updatedTipeTransaksi = $tipeTransaksi->refresh()->toArray();

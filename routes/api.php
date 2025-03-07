@@ -17,4 +17,6 @@ Route::middleware(['auth:sanctum', 'ability:' . TokenAbility::ACCESS_API->value]
     Route::apiResource("penghuni", \App\Http\Controllers\PenghuniController::class);
     Route::apiResource("rumah", \App\Http\Controllers\RumahController::class);
     Route::apiResource("tipe-transaksi", \App\Http\Controllers\TipeTransaksiController::class);
+
+    Route::apiResource("transaksi", \App\Http\Controllers\TransaksiController::class);
 });

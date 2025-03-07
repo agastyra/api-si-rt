@@ -21,9 +21,11 @@ return new class extends Migration
             $table->decimal("nominal", 10, 2);
             $table->foreignId("created_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId("updated_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
-            $table->string('deletion_token')->default('NA')->unique();
+            $table->string('deletion_token')->default('NA');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->unique(["id", "deletion_token"]);
         });
     }
 
