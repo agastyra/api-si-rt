@@ -36,7 +36,7 @@ class UpdatePenghuniRequest extends FormRequest
             "nomor_telepon" => [
                 "required", "string",
                 Rule::unique('penghunis', 'nomor_telepon')
-                    ->ignore($this->penghuni->id, 'id')
+                    ->ignore($this->penghuni, 'id')
                     ->whereNull('deleted_at'),
                 "max:13"],
             "jenis_kelamin" => ["required", "string", "in:Laki-laki,Perempuan"],

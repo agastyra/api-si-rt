@@ -71,11 +71,11 @@ class PenghuniController extends Controller
         try {
             $data = $request->except("_method");
             $data["updated_by"] = auth()->user()->id;
-            $data["foto_ktp"] = $penghuni->foto_ktp;
+            $ktp = explode("storage/", $penghuni->foto_ktp);
+            $ktp = $ktp[1] ?? null;
+            $data["foto_ktp"] = $ktp;
 
             if ($request->hasFile("foto_ktp")) {
-                $ktp = explode("storage/", $penghuni->foto_ktp);
-                $ktp = $ktp[1] ?? null;
                 Storage::delete($ktp);
                 $data["foto_ktp"] = $request->file("foto_ktp")->store('ktp');
             }
