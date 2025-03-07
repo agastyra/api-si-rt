@@ -22,7 +22,7 @@ class Penghuni extends Model
         "deletion_token"
     ];
 
-    protected $with = ["penghuniRumah"];
+    protected $cascadeDeletes = ["penghuni_rumah"];
 
     public function fotoKtp(): Attribute
     {
@@ -37,6 +37,19 @@ class Penghuni extends Model
         parent::delete();
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::deleting(function($penghuni) {
+            $penghuni->penghuni_rumah()->update(['deletion_token' => Str::uuid()]);
+            $penghuni->penghuni_rumah()->delete();
+        });
+        static::restoring(function($penghuni) {
+            $penghuni->penghuni_rumah()->update(['deletion_token' => "NA"]);
+            $penghuni->penghuni_rumah()->restore();
+        });
+    }
+
     public function createdBy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, "created_by");
@@ -47,7 +60,7 @@ class Penghuni extends Model
         return $this->belongsTo(User::class, "created_by");
     }
 
-    public function penghuniRumah(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function penghuni_rumah(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(PenghuniRumah::class, "penghuni_id");
     }

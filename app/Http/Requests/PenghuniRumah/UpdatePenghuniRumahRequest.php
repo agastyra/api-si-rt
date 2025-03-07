@@ -29,8 +29,8 @@ class UpdatePenghuniRumahRequest extends FormRequest
             "penghuni_id" => ["required", "exists:penghunis,id"],
             "periode_bulan_mulai" => ["nullable", "numeric", "in:1,2,3,4,5,6,7,8,9,10,11,12"],
             "periode_bulan_selesai" => ["nullable", "numeric", "in:1,2,3,4,5,6,7,8,9,10,11,12"],
-            "periode_tahun_mulai" => ["nullable", Rule::date()->format("Y")],
-            "periode_tahun_selesai" => ["nullable", Rule::date()->format("Y")],
+            "periode_tahun_mulai" => ["nullable", "digits:4", "integer", "min:2023", "max:" . date('Y')],
+            "periode_tahun_selesai" => ["nullable", "digits:4", "integer", "min:2023", "max:" . date('Y')],
         ];
     }
 
@@ -45,8 +45,14 @@ class UpdatePenghuniRumahRequest extends FormRequest
             "periode_bulan_mulai.in" => "Periode bulan mulai tidak valid",
             "periode_bulan_selesai.numeric" => "Periode bulan selesai tidak valid",
             "periode_bulan_selesai.in" => "Periode bulan selesai tidak valid",
-            "periode_tahun_mulai.date_format" => "Periode tahun mulai tidak valid",
-            "periode_tahun_selesai.date_format" => "Periode tahun selesai tidak valid",
+            "periode_tahun_mulai.digits" => "Periode tahun tidak valid",
+            "periode_tahun_selesai.digits" => "Periode tahun tidak valid",
+            "periode_tahun_mulai.integer" => "Periode tahun tidak valid",
+            "periode_tahun_selesai.integer" => "Periode tahun tidak valid",
+            "periode_tahun_mulai.min" => "Periode tahun melebihi 2023",
+            "periode_tahun_selesai.min" => "Periode tahun melebihi 2023",
+            "periode_tahun_mulai.max" => "Periode tahun melebihi " . date('Y'),
+            "periode_tahun_selesai.max" => "Periode tahun melebihi " . date('Y'),
         ];
     }
 

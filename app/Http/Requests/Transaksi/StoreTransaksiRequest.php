@@ -58,7 +58,7 @@ class StoreTransaksiRequest extends FormRequest
             "transaksi_detail.*.periode_bulan.numeric" => "Periode bulan tidak valid",
             "transaksi_detail.*.periode_bulan.in" => "Periode bulan tidak valid",
             "transaksi_detail.*.periode_tahun.required" => "Periode tahun harus diisi",
-            "transaki_detail.*.periode_tahun.digits" => "Periode tahun tidak valid",
+            "transaksi_detail.*.periode_tahun.digits" => "Periode tahun tidak valid",
             "transaksi_detail.*.periode_tahun.integer" => "Periode tahun tidak valid",
             "transaksi_detail.*.periode_tahun.min" => "Periode tahun melebihi 2023",
             "transaksi_detail.*.periode_tahun.max" => "Periode tahun melebihi " . date('Y'),

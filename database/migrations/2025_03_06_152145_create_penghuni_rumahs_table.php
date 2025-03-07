@@ -28,6 +28,8 @@ return new class extends Migration
             $table->string('deletion_token')->default('NA');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->unique(["id", "deletion_token"]);
         });
     }
 

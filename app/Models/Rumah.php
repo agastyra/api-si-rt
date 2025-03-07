@@ -22,12 +22,26 @@ class Rumah extends Model
         "deletion_token"
     ];
 
-    protected $with = ["penghuniRumah"];
+    protected $with = ["penghuni_rumah"];
+    protected $cascadeDeletes = ["penghuni_rumah"];
 
     public function delete(): void
     {
         $this->update(['deletion_token' => Str::uuid()]);
         parent::delete();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::deleting(function($rumah) {
+            $rumah->penghuni_rumah()->update(['deletion_token' => Str::uuid()]);
+            $rumah->penghuni_rumah()->delete();
+        });
+        static::restoring(function($rumah) {
+            $rumah->penghuni_rumah()->update(['deletion_token' => "NA"]);
+            $rumah->penghuni_rumah()->restore();
+        });
     }
 
     public function createdBy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -40,7 +54,7 @@ class Rumah extends Model
         return $this->belongsTo(User::class, "created_by");
     }
 
-    public function penghuniRumah(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function penghuni_rumah(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(PenghuniRumah::class, "rumah_id");
     }

@@ -25,7 +25,16 @@ class RumahCollection extends ResourceCollection
     {
         return [
             "message" => $this->message,
-            "data" => $this->collection
+            "data" => $this->collection->transform(function ($rumah) {
+                return [
+                    "id" => $rumah->id,
+                    "blok" => $rumah->blok,
+                    "status_rumah" => $rumah->status_rumah,
+                    "penghuni_rumah" => PenghuniRumahResource::collection($rumah->penghuni_rumah),
+                    "created_by" => $rumah->created_by,
+                    "updated_by" => $rumah->updated_by
+                ];
+            })
         ];
     }
 }
