@@ -51,6 +51,15 @@
    
     `FILESYSTEM_DISK=public`
 
+7. Configure your origin:
+
+
+    `SANCTUM_STATEFUL_DOMAINS="http://localhost:5173" # example in react vite`
+
+    `SESSION_DRIVER=cookie # for SPA authentication`
+
+    `SESSION_DOMAIN=http://localhost:5173`
+
 8. Run database migrations and Database seeds:
 
 
