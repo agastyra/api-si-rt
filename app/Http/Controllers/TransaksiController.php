@@ -6,7 +6,9 @@ use App\Http\Requests\Transaksi\StoreTransaksiRequest;
 use App\Http\Requests\Transaksi\UpdateTransaksiRequest;
 use App\Http\Requests\TransaksiDetail\StoreTransaksiDetailRequest;
 use App\Http\Resources\TransaksiCollection;
+use App\Models\Rumah;
 use App\Models\Transaksi;
+use App\Services\ApiService;
 use Illuminate\Support\Str;
 
 class TransaksiController extends Controller
@@ -33,6 +35,9 @@ class TransaksiController extends Controller
     public function store(StoreTransaksiRequest $request)
     {
         try {
+            $rumah = Rumah::find($request->rumah_id);
+            ApiService::checkStatusForRumah($rumah);
+
             $data = $request->except("transaksi_detail");
             $data["created_by"] = auth()->user()->id;
             $data["updated_by"] = auth()->user()->id;
@@ -54,9 +59,8 @@ class TransaksiController extends Controller
             return new TransaksiCollection("Fetch data 'Transaksi' successfully!", $newTransaksi);
         } catch (\Exception $exception) {
             return response()->json([
-                'message' => "An error occurred while storing 'Transaksi' data",
-                "error" => $exception->getMessage()
-            ], 500);
+                'message' => $exception->getMessage(),
+            ], $exception->getCode());
         }
     }
 
@@ -79,6 +83,9 @@ class TransaksiController extends Controller
     public function update(UpdateTransaksiRequest $request, Transaksi $transaksi)
     {
         try {
+            $rumah = Rumah::find($request->rumah_id);
+            ApiService::checkStatusForRumah($rumah);
+
             $data = $request->except('transaksi_detail');
             $data['updated_by'] = auth()->user()->id;
             $transaksi->update($data);

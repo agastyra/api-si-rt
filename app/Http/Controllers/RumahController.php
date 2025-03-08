@@ -41,7 +41,7 @@ class RumahController extends Controller
             $data["created_by"] = auth()->user()->id;
             $data["updated_by"] = auth()->user()->id;
 
-            $newRumah = Rumah::create($data)->toArray();
+            $newRumah = Rumah::create($data);
             return new RumahCollection($newRumah, "Store data 'Rumah' successfully!");
         } catch (\Exception $exception) {
             return response()->json([

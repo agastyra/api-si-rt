@@ -3,6 +3,7 @@
 use App\Enum\TokenAbility;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticateController;
+use App\Http\Controllers\ReportController;
 
 Route::get("/", fn() => response()->json(["message" => "Welcome to the API"]));
 
@@ -19,4 +20,8 @@ Route::middleware(['auth:sanctum', 'ability:' . TokenAbility::ACCESS_API->value]
     Route::apiResource("tipe-transaksi", \App\Http\Controllers\TipeTransaksiController::class);
     Route::apiResource("transaksi", \App\Http\Controllers\TransaksiController::class);
     Route::apiResource("penghuni-rumah", \App\Http\Controllers\PenghuniRumahController::class);
+
+    Route::prefix("report")->group(function () {
+        Route::get("monthly-billing", [ReportController::class, "getMonthlyBilling"])->name("api.report.monthly-billing");
+    });
 });
