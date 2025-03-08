@@ -23,5 +23,6 @@ Route::middleware(['auth:sanctum', 'ability:' . TokenAbility::ACCESS_API->value]
 
     Route::prefix("report")->group(function () {
         Route::get("monthly-billing", [ReportController::class, "getMonthlyBilling"])->name("api.report.monthly-billing");
+        Route::get("monthly-transaction", [ReportController::class, "getMonthlyTransaction"])->name("api.report.monthly-transaction");
     });
 });
