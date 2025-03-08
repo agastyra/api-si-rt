@@ -29,8 +29,12 @@ class TransaksiCollection extends ResourceCollection
                     "id" => $transaksi->id,
                     "no_transaksi" => $transaksi->no_transaksi,
                     "tanggal_transaksi" => $transaksi->tanggal_transaksi,
-                    "rumah" => (new RumahCollection(collect([$transaksi->rumah])))->toArray($request)["data"][0] ?? null,
-                    "transaksi_detail" => new TransaksiDetailCollection($transaksi->transaksi_detail) ?? null,
+                    "rumah" => $transaksi->rumah
+                        ? (new RumahCollection(collect([$transaksi->rumah])))->toArray($request)["data"][0] ?? null
+                        : null,
+                    "transaksi_detail" => $transaksi->transaksi_detail
+                        ? new TransaksiDetailCollection($transaksi->transaksi_detail)
+                        : null,
                     "created_by" => $transaksi->created_by,
                     "updated_by" => $transaksi->updated_by
                 ];

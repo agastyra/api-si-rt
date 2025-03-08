@@ -27,7 +27,7 @@ class ReportController extends Controller
             $periode_bulan = $request->input("periode_bulan");
             $periode_tahun = $request->input("periode_tahun");
 
-            $monthlyBilling = ApiService::generateTransactionReport($periode_bulan, $periode_tahun, $blok);
+            $monthlyBilling = ApiService::generateTransactionReport($periode_bulan, $periode_tahun, $blok, null, "Pemasukan");
 
             return response()->json([
                 "message" => "Fetch data 'Monthly Billing' successfully!",
@@ -36,7 +36,6 @@ class ReportController extends Controller
         } catch (ValidationException $validationException) {
             return response()->json([
                 'message' => 'Failed to process',
-                'status' => 422,
                 'errors' => $validationException->validator->errors(),
             ], 422);
         } catch (\Exception $exception) {
@@ -48,35 +47,67 @@ class ReportController extends Controller
 
     }
 
-    public function getMonthlyTransaction(Request $request)
+    public function getTransactionReport(Request $request)
     {
         try {
             $request->validate([
-                "periode_bulan" => "required",
+                "periode_bulan" => "in:1,2,3,4,5,6,7,8,9,10,11,12",
                 "periode_tahun" => "required"
             ], [
-                "periode_bulan.required" => "Periode bulan harus diisi",
-                "periode_tahun.required" => "Periode tahun harus diisi"
+                "periode_tahun.required" => "Periode tahun harus diisi",
+                "periode_bulan.in" => "Periode bulan tidak valid"
             ]);
 
             $periode_bulan = $request->input("periode_bulan");
             $periode_tahun = $request->input("periode_tahun");
+            $tipe_transaksi_id = $request->input("tipe_transaksi");
+            $jenis_transaksi = $request->input("jenis_transaksi");
 
-            $monthlyTransaction = ApiService::generateTransactionReport($periode_bulan, $periode_tahun);
+            $transactionReport = ApiService::generateTransactionReport($periode_bulan, $periode_tahun, null,
+                $tipe_transaksi_id, $jenis_transaksi);
 
             return response()->json([
-                "message" => "Fetch data 'Monthly Transaction' successfully!",
-                "data" => $monthlyTransaction
+                "message" => "Fetch data 'Transaction Report' successfully!",
+                "data" => $transactionReport
             ]);
         } catch (ValidationException $validationException) {
             return response()->json([
                 'message' => 'Failed to process',
-                'status' => 422,
                 'errors' => $validationException->validator->errors(),
             ], 422);
         } catch (\Exception $exception) {
             return response()->json([
-                "message" => "An error occurred while fetching 'Monthly Transaction' data",
+                "message" => "An error occurred while fetching 'Transaction Report' data",
+                "error" => $exception->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getBalanceSummary(Request $request)
+    {
+        try {
+            $request->validate([
+                "periode_tahun" => "required"
+            ], [
+                "periode_tahun.required" => "Periode tahun harus diisi",
+            ]);
+
+            $periode_tahun = $request->input("periode_tahun");
+
+            $balanceSummary = ApiService::generateBalanceSummary($periode_tahun);
+
+            return response()->json([
+                "message" => "Fetch data 'Balance Summary' successfully!",
+                "data" => $balanceSummary
+            ]);
+        } catch (ValidationException $validationException) {
+            return response()->json([
+                'message' => 'Failed to process',
+                'errors' => $validationException->validator->errors(),
+            ], 422);
+        } catch (\Exception $exception) {
+            return response()->json([
+                "message" => "An error occurred while fetching 'Balance Summary' data",
                 "error" => $exception->getMessage()
             ], 500);
         }

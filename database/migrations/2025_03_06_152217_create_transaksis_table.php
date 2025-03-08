@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("rumah_id")->constrained("rumahs")->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId("rumah_id")
+                ->nullable()
+                ->constrained("rumahs")->cascadeOnUpdate()->restrictOnDelete();
             $table->date("tanggal_transaksi");
             $table->string("no_transaksi", 6);
             $table->foreignId("created_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();

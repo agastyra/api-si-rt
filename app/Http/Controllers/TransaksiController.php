@@ -35,8 +35,10 @@ class TransaksiController extends Controller
     public function store(StoreTransaksiRequest $request)
     {
         try {
-            $rumah = Rumah::find($request->rumah_id);
-            ApiService::checkStatusForRumah($rumah);
+            if ($request->has("rumah_id")) {
+                $rumah = Rumah::find($request->rumah_id);
+                ApiService::checkStatusForRumah($rumah);
+            }
 
             $data = $request->except("transaksi_detail");
             $data["created_by"] = auth()->user()->id;
@@ -60,7 +62,7 @@ class TransaksiController extends Controller
         } catch (\Exception $exception) {
             return response()->json([
                 'message' => $exception->getMessage(),
-            ], $exception->getCode());
+            ], 500);
         }
     }
 
@@ -83,8 +85,10 @@ class TransaksiController extends Controller
     public function update(UpdateTransaksiRequest $request, Transaksi $transaksi)
     {
         try {
-            $rumah = Rumah::find($request->rumah_id);
-            ApiService::checkStatusForRumah($rumah);
+            if ($request->has("rumah_id")) {
+                $rumah = Rumah::find($request->rumah_id);
+                ApiService::checkStatusForRumah($rumah);
+            }
 
             $data = $request->except('transaksi_detail');
             $data['updated_by'] = auth()->user()->id;
