@@ -22,35 +22,41 @@ class ApiService
         if ($periode_bulan < 1 || $periode_bulan > 12) throw new \Exception("Invalid month", 400);
         if ($periode_tahun < 2023) throw new \Exception("Invalid year", 400);
 
-        $sql = "
-                SELECT ".
-                ($blok != null ? "rumahs.blok, rumahs.status_rumah, " : "")
-                    ."tipe_transaksis.nama, tipe_transaksis.jenis, transaksi_details.periode_bulan, transaksi_details.periode_tahun, transaksi_details.nominal".
-                ($blok != null ? " FROM rumahs LEFT JOIN transaksis ON rumahs.id = transaksis.rumah_id " : " FROM transaksis ")
-                ."INNER JOIN transaksi_details ON transaksis.id = transaksi_details.transaksi_id
-                RIGHT JOIN tipe_transaksis ON tipe_transaksis.id = transaksi_details.tipe_transaksi_id
-                WHERE ".
-                ($blok != null ? "rumahs.blok = :blok " : "")
-                . ($periode_bulan != null ? "AND transaksi_details.periode_bulan = :periode_bulan" : "")
-                . ($periode_tahun != null ? "AND transaksi_details.periode_tahun = :periode_tahun" : "").
-                ($blok != null ? " AND rumahs.deletion_token = 'NA' " : "")
-                ."
-                  AND transaksis.deletion_token = 'NA'
-                  AND tipe_transaksis.deletion_token = 'NA'
-                  AND transaksi_details.deletion_token = 'NA'
-            ";
+        $select = ($blok !== null ? "rumahs.blok, rumahs.status_rumah, " : "")
+            . "tipe_transaksis.nama, tipe_transaksis.jenis, transaksi_details.periode_bulan, transaksi_details.periode_tahun, transaksi_details.nominal";
+
+        $from = ($blok !== null ? "rumahs LEFT JOIN transaksis ON rumahs.id = transaksis.rumah_id " : "transaksis ")
+            . "INNER JOIN transaksi_details ON transaksis.id = transaksi_details.transaksi_id
+           RIGHT JOIN tipe_transaksis ON tipe_transaksis.id = transaksi_details.tipe_transaksi_id";
+
+        $conditions = [];
+        if ($blok !== null) {
+            $conditions[] = "rumahs.blok = :blok";
+        }
+        if ($periode_bulan !== null) {
+            $conditions[] = "transaksi_details.periode_bulan = :periode_bulan";
+        }
+        if ($periode_tahun !== null) {
+            $conditions[] = "transaksi_details.periode_tahun = :periode_tahun";
+        }
+        if ($blok !== null) {
+            $conditions[] = "rumahs.deletion_token = 'NA'";
+        }
+        $conditions[] = "transaksis.deletion_token = 'NA'";
+        $conditions[] = "tipe_transaksis.deletion_token = 'NA'";
+        $conditions[] = "transaksi_details.deletion_token = 'NA'";
+
+        $sql = "SELECT $select FROM $from WHERE " . implode(' AND ', $conditions);
 
         $params = [];
-
         if ($blok !== null) {
             $params['blok'] = $blok;
         }
-
         if ($periode_bulan !== null) {
-            $params["periode_bulan"] = $periode_bulan;
+            $params['periode_bulan'] = $periode_bulan;
         }
         if ($periode_tahun !== null) {
-            $params["periode_tahun"] = $periode_tahun;
+            $params['periode_tahun'] = $periode_tahun;
         }
 
         return DB::select($sql, $params);
