@@ -22,7 +22,7 @@ Route::middleware(['auth:sanctum', 'ability:' . TokenAbility::ACCESS_API->value]
     Route::apiResource("penghuni-rumah", \App\Http\Controllers\PenghuniRumahController::class);
 
     Route::prefix("report")->group(function () {
-        Route::get("monthly-billing", [ReportController::class, "getMonthlyBilling"])->name("api.report.monthly-billing");
+        Route::get("monthly-billing", [ReportController::class, "getMonthlyBillingPerHouse"])->name("api.report.monthly-billing");
         Route::get("monthly-transaction", [ReportController::class, "getMonthlyTransaction"])->name("api.report.monthly-transaction");
     });
 });

@@ -9,7 +9,7 @@ use Illuminate\Validation\ValidationException;
 
 class ReportController extends Controller
 {
-    public function getMonthlyBilling(Request $request)
+    public function getMonthlyBillingPerHouse(Request $request)
     {
         try {
             $request->validate([
@@ -27,7 +27,7 @@ class ReportController extends Controller
             $periode_bulan = $request->input("periode_bulan");
             $periode_tahun = $request->input("periode_tahun");
 
-            $monthlyBilling = ApiService::monthlyReport($periode_bulan, $periode_tahun, $blok);
+            $monthlyBilling = ApiService::generateTransactionReport($periode_bulan, $periode_tahun, $blok);
 
             return response()->json([
                 "message" => "Fetch data 'Monthly Billing' successfully!",
@@ -62,7 +62,7 @@ class ReportController extends Controller
             $periode_bulan = $request->input("periode_bulan");
             $periode_tahun = $request->input("periode_tahun");
 
-            $monthlyTransaction = ApiService::monthlyReport($periode_bulan, $periode_tahun);
+            $monthlyTransaction = ApiService::generateTransactionReport($periode_bulan, $periode_tahun);
 
             return response()->json([
                 "message" => "Fetch data 'Monthly Transaction' successfully!",

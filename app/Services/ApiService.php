@@ -16,7 +16,8 @@ class ApiService
         }
     }
 
-    public static function monthlyReport(int $periode_bulan, int $periode_tahun, string $blok = null)
+    public static function generateTransactionReport(int $periode_bulan = null, int $periode_tahun = null, string
+    $blok = null)
     {
         if ($periode_bulan < 1 || $periode_bulan > 12) throw new \Exception("Invalid month", 400);
         if ($periode_tahun < 2023) throw new \Exception("Invalid year", 400);
@@ -29,10 +30,9 @@ class ApiService
                 ."INNER JOIN transaksi_details ON transaksis.id = transaksi_details.transaksi_id
                 RIGHT JOIN tipe_transaksis ON tipe_transaksis.id = transaksi_details.tipe_transaksi_id
                 WHERE ".
-                ($blok != null ? "rumahs.blok = :blok AND " : "")
-                ."
-                  transaksi_details.periode_bulan = :periode_bulan
-                  AND transaksi_details.periode_tahun = :periode_tahun".
+                ($blok != null ? "rumahs.blok = :blok " : "")
+                . ($periode_bulan != null ? "AND transaksi_details.periode_bulan = :periode_bulan" : "")
+                . ($periode_tahun != null ? "AND transaksi_details.periode_tahun = :periode_tahun" : "").
                 ($blok != null ? " AND rumahs.deletion_token = 'NA' " : "")
                 ."
                   AND transaksis.deletion_token = 'NA'
@@ -40,13 +40,17 @@ class ApiService
                   AND transaksi_details.deletion_token = 'NA'
             ";
 
-        $params = [
-            'periode_bulan' => $periode_bulan,
-            'periode_tahun' => $periode_tahun,
-        ];
+        $params = [];
 
         if ($blok !== null) {
             $params['blok'] = $blok;
+        }
+
+        if ($periode_bulan !== null) {
+            $params["periode_bulan"] = $periode_bulan;
+        }
+        if ($periode_tahun !== null) {
+            $params["periode_tahun"] = $periode_tahun;
         }
 
         return DB::select($sql, $params);
