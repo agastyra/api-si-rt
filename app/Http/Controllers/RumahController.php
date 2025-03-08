@@ -42,6 +42,7 @@ class RumahController extends Controller
             $data["updated_by"] = auth()->user()->id;
 
             $newRumah = Rumah::create($data);
+            $newRumah = Rumah::whereId($newRumah->id)->get();
             return new RumahCollection($newRumah, "Store data 'Rumah' successfully!");
         } catch (\Exception $exception) {
             return response()->json([
@@ -69,6 +70,7 @@ class RumahController extends Controller
 
             $rumah->update($data);
             $updatedRumah = $rumah->refresh()->toArray();
+            $updatedRumah = Rumah::whereId($updatedRumah["id"])->get();
             return new RumahCollection($updatedRumah, "Update data 'Rumah' successfully!");
         } catch (\Exception $exception) {
             return response()->json([
