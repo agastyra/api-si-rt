@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Transaksi\StoreTransaksiRequest;
 use App\Http\Requests\Transaksi\UpdateTransaksiRequest;
-use App\Http\Requests\TransaksiDetail\StoreTransaksiDetailRequest;
 use App\Http\Resources\TransaksiCollection;
 use App\Models\Rumah;
 use App\Models\Transaksi;
 use App\Services\ApiService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class TransaksiController extends Controller
@@ -16,11 +16,16 @@ class TransaksiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $allTransaksi = Transaksi::all();
-            return new TransaksiCollection("Fetch data 'Transaksi' successfully!", $allTransaksi);
+            $allTransaksi = Transaksi::orderBy("tanggal_transaksi", "desc")->orderBy("no_transaksi", "desc")
+                ->filters($request->all())
+                ->paginate(10);
+
+            $latestTransactionNumber = ApiService::getLatestTransactionNumber();
+
+            return new TransaksiCollection("Fetch data 'Transaksi' successfully!", $allTransaksi, $latestTransactionNumber);
         } catch (\Exception $exception) {
             return response()->json([
                 'message' => "An error occurred while fetching 'Transaksi' data",
@@ -66,17 +71,19 @@ class TransaksiController extends Controller
         }
     }
 
-    public function storeTransaksiDetail(StoreTransaksiDetailRequest $request)
-    {
-
-    }
-
     /**
      * Display the specified resource.
      */
     public function show(Transaksi $transaksi)
     {
-        //
+        try {
+            $transaksi = Transaksi::whereId($transaksi->id)->get();
+            return new TransaksiCollection("Fetch data 'Transaksi' successfully!", $transaksi);
+        } catch (\Exception $exception) {
+            return response()->json([
+                'message' => "An error occurred while fetching 'Transaksi' data",
+            ], 500);
+        }
     }
 
     /**
@@ -138,4 +145,5 @@ class TransaksiController extends Controller
             ], 500);
         }
     }
+
 }

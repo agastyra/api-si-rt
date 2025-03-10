@@ -37,7 +37,7 @@ class TransaksiDetail extends Model
         return $this->belongsTo(User::class, "created_by");
     }
 
-    public function tipeTransaksi(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function tipe_transaksi(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(TipeTransaksi::class);
     }

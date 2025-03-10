@@ -18,7 +18,7 @@ return new class extends Migration
             $table->year("periode_tahun");
             $table->foreignId("tipe_transaksi_id")->constrained("tipe_transaksis")->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId("transaksi_id")->constrained("transaksis")->cascadeOnUpdate()->restrictOnDelete();
-            $table->decimal("nominal", 10, 2);
+            $table->decimal("nominal", 10, 0);
             $table->foreignId("created_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId("updated_by")->constrained("users")->cascadeOnUpdate()->restrictOnDelete();
             $table->string('deletion_token')->default('NA');

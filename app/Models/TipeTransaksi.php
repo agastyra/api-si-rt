@@ -21,12 +21,17 @@ class TipeTransaksi extends Model
         "deletion_token"
     ];
 
-    protected $with = ["transaksi_detail"];
-
     public function delete(): void
     {
         $this->update(['deletion_token' => Str::uuid()]);
         parent::delete();
+    }
+
+    public function scopeFilters($query, array $filters): void
+    {
+        $query->when($filters["jenis"] ?? false, function($query) use($filters) {
+            return $query->where("jenis", $filters["jenis"]);
+        });
     }
 
     public function createdBy(): \Illuminate\Database\Eloquent\Relations\BelongsTo

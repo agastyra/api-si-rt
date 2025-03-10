@@ -24,6 +24,7 @@ class PenghuniRumahResource extends JsonResource
         return [
             "id" => $this->id,
             "penghuni" => collect($this->penghuni),
+            "rumah" => collect($this->rumah),
             "periode_bulan_mulai" => $this->periode_bulan_mulai,
             "periode_bulan_selesai" => $this->periode_bulan_selesai,
             "periode_tahun_mulai" => $this->periode_tahun_mulai,

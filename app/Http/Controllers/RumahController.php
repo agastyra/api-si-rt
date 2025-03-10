@@ -2,22 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Enum\StatusRumah;
 use App\Http\Requests\Rumah\StoreRumahRequest;
 use App\Http\Requests\Rumah\UpdateRumahRequest;
 use App\Http\Resources\RumahCollection;
 use App\Models\Rumah;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\Request;
 
 class RumahController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $allRumah = Rumah::orderBy("blok")
-                ->get();
+            $allRumah = Rumah::orderBy("blok");
+            $allRumah = $request->has("all") ? $allRumah->where("status_rumah", StatusRumah::DIHUNI->value)->get() :
+                $allRumah->paginate(10);
+
             return new RumahCollection($allRumah, "Fetch data 'Rumah' successfully!");
         } catch (HttpResponseException $exception) {
             return response()->json([
@@ -56,7 +60,14 @@ class RumahController extends Controller
      */
     public function show(Rumah $rumah)
     {
-        //
+        try {
+            $rumah = Rumah::whereId($rumah->id)->get();
+            return new RumahCollection($rumah, "Fetch data 'Rumah' successfully!");
+        } catch (\Exception $exception) {
+            return response()->json([
+                'message' => "An error occurred while fetching 'Rumah' data",
+            ], 500);
+        }
     }
 
     /**

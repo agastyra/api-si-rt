@@ -15,7 +15,7 @@ class PenghuniRumahController extends Controller
     public function index()
     {
         try {
-            $allPenghuniRumah = PenghuniRumah::all();
+            $allPenghuniRumah = PenghuniRumah::paginate(10);
             return PenghuniRumahResource::collection($allPenghuniRumah);
         } catch (\Exception $exception) {
             return response()->json([
@@ -49,7 +49,13 @@ class PenghuniRumahController extends Controller
      */
     public function show(PenghuniRumah $penghuniRumah)
     {
-        //
+        try {
+            return new PenghuniRumahResource($penghuniRumah);
+        } catch (\Exception $exception) {
+            return response()->json([
+                'message' => "An error occurred while fetching 'Penghuni Rumah' data",
+            ], 500);
+        }
     }
 
     /**
@@ -62,7 +68,7 @@ class PenghuniRumahController extends Controller
             $data["updated_by"] = auth()->user()->id;
 
             $penghuniRumah->update($data);
-            $updatedPenghuniRumah = $penghuniRumah->refresh()->toArray();
+            $updatedPenghuniRumah = $penghuniRumah->refresh();
             return new PenghuniRumahResource($updatedPenghuniRumah, "Update data 'Penghuni Rumah' successfully!");
         } catch (\Exception $exception) {
             return response()->json([

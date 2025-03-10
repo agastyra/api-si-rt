@@ -43,6 +43,16 @@ class Transaksi extends Model
         });
     }
 
+    public function scopeFilters($query, array $filters): void
+    {
+        $query->when($filters["jenis"] ?? false, function($query) use($filters) {
+            if ($filters["jenis"] == "Pemasukan") {
+                return $query->where("rumah_id", "!=", null);
+            }
+            return $query->where("rumah_id", null);
+        });
+    }
+
     public function createdBy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, "created_by");

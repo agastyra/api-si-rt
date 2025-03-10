@@ -7,6 +7,7 @@ use App\Http\Requests\Penghuni\UpdatePenghuniRequest;
 use App\Http\Resources\PenghuniCollection;
 use App\Models\Penghuni;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class PenghuniController extends Controller
@@ -14,11 +15,11 @@ class PenghuniController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $allPenghuni = Penghuni::orderBy("nama_lengkap")
-                ->get();
+            $allPenghuni = Penghuni::orderBy("nama_lengkap");
+            $allPenghuni = $request->has("all") ? $allPenghuni->get() : $allPenghuni->paginate(10);
             return new PenghuniCollection("Fetch data 'Penghuni' successfully!", $allPenghuni);
         } catch (HttpResponseException $exception) {
             return response()->json([
@@ -60,7 +61,13 @@ class PenghuniController extends Controller
      */
     public function show(Penghuni $penghuni)
     {
-        //
+        try {
+            return new PenghuniCollection("Fetch data 'Penghuni' successfully!", collect($penghuni));
+        } catch (\Exception $exception) {
+            return response()->json([
+                'message' => "An error occurred while fetching 'Penghuni' data",
+            ], 500);
+        }
     }
 
     /**

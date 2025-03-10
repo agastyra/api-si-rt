@@ -7,17 +7,19 @@ use App\Http\Requests\TipeTransaksi\UpdateTipeTransaksiRequest;
 use App\Http\Resources\TipeTransaksiCollection;
 use App\Models\TipeTransaksi;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\Request;
 
 class TipeTransaksiController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $allTipeTransaksi = TipeTransaksi::orderBy("nama")
-                ->get();
+            $allTipeTransaksi = TipeTransaksi::orderBy("jenis")->orderBy("nama")->filters($request->all());
+            $allTipeTransaksi = $request->has("all") ? $allTipeTransaksi->get() : $allTipeTransaksi->paginate(10);
+
             return new TipeTransaksiCollection("Fetch data 'Tipe Transaksi' successfully!", $allTipeTransaksi);
         } catch (HttpResponseException $exception) {
             return response()->json([
@@ -55,7 +57,13 @@ class TipeTransaksiController extends Controller
      */
     public function show(TipeTransaksi $tipeTransaksi)
     {
-        //
+        try {
+            return new TipeTransaksiCollection("Fetch data 'Tipe Transaksi' successfully!", collect($tipeTransaksi));
+        } catch (\Exception $exception) {
+            return response()->json([
+                'message' => "An error occurred while fetching 'Tipe Transaksi' data",
+            ], 500);
+        }
     }
 
     /**
