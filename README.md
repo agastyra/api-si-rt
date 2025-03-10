@@ -13,17 +13,18 @@
 
     `composer install`
 
-3. Generate application key:
-
-
-    `php artisan key:generate`
-
-4. Set up environment:
+3. Set up environment:
 
    - Copy `.env.example` file to `.env`
 
 
     `cp .env.example .env # example in linux`
+
+
+4. Generate application key:
+
+
+    `php artisan key:generate`
 
 5. Configure database:
     
