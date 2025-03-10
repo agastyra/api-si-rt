@@ -9,7 +9,8 @@ class TransaksiCollection extends ResourceCollection
 {
     public function __construct(
         public string $message,
-                      $resource
+                      $resource,
+        public mixed $transaction_number = null
     )
     {
         parent::__construct($resource);
@@ -24,6 +25,7 @@ class TransaksiCollection extends ResourceCollection
     {
         return [
             "message" => $this->message,
+            "transaction_number" => $this->transaction_number,
             "data" => $this->collection->transform(function ($transaksi) use ($request) {
                 return [
                     "id" => $transaksi->id,

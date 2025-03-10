@@ -4,11 +4,11 @@ namespace App\Services;
 
 use App\Enum\StatusRumah;
 use App\Models\Rumah;
+use App\Models\Transaksi;
 use Illuminate\Support\Facades\DB;
 
 class ApiService
 {
-
     public static function checkStatusForRumah(Rumah $rumah): void
     {
         if ($rumah->status_rumah == StatusRumah::TIDAK_DIHUNI->value) {
@@ -21,7 +21,8 @@ class ApiService
         ?int $periode_tahun = null,
         ?string $blok = null,
         ?int $tipe_transaksi_id = null,
-        ?string $jenis_transaksi = null
+        ?string $jenis_transaksi = null,
+        int $perPage = 10, int $page = 1
     ): array
     {
         $select = ($blok !== null ? "rumahs.blok, rumahs.status_rumah, " : "")
@@ -55,7 +56,7 @@ class ApiService
         $conditions[] = "tipe_transaksis.deletion_token = 'NA'";
         $conditions[] = "transaksi_details.deletion_token = 'NA'";
 
-        $sql = "SELECT $select FROM $from WHERE " . implode(' AND ', $conditions);
+        $sql = "SELECT $select FROM $from WHERE " . implode(' AND ', $conditions) . " ORDER BY transaksis.tanggal_transaksi DESC";
 
         $params = [];
         if ($blok !== null) {
@@ -74,7 +75,9 @@ class ApiService
             $params['jenis_pengeluaran'] = $jenis_transaksi;
         }
 
-        return DB::select($sql, $params);
+        $results = DB::select($sql, $params);
+
+        return self::paginate($results, $page, $perPage);
     }
 
     public static function generateBalanceSummary(int $periode_tahun): array
@@ -136,4 +139,88 @@ class ApiService
         ]);
     }
 
+    public static function getLatestTransactionNumber(): string
+    {
+        $latestTransaction = Transaksi::orderBy('no_transaksi', 'desc')->first();
+        $initialValue = 'TRX-01';
+
+        if (!$latestTransaction) {
+            return $initialValue;
+        }
+
+        $latestNumber = (int) str_replace('TRX-', '', $latestTransaction->no_transaksi);
+        $newNumber = $latestNumber + 1;
+
+        return 'TRX-' . str_pad($newNumber, 2, '0', STR_PAD_LEFT);
+    }
+
+    public static function generateMonthlyBilling(int $periode_bulan, int $periode_tahun, int $perPage = 10, int $page = 1): array {
+        $sql = "
+            WITH MonthlyRecord AS (
+                SELECT rumahs.id AS 'rumah_id', rumahs.blok, rumahs.status_rumah, transaksi_details.periode_bulan, transaksi_details.periode_tahun,
+                    tipe_transaksis.nama, tipe_transaksis.jenis
+                FROM rumahs
+
+                LEFT JOIN transaksis
+                    ON rumahs.id = transaksis.rumah_id
+                    AND transaksis.deletion_token = 'NA'
+
+                LEFT JOIN transaksi_details
+                    ON transaksis.id = transaksi_details.transaksi_id
+                    AND transaksi_details.deletion_token = 'NA'
+
+                LEFT JOIN tipe_transaksis
+                    ON tipe_transaksis.id = transaksi_details.tipe_transaksi_id
+                    AND tipe_transaksis.deletion_token = 'NA'
+
+                WHERE
+                    rumahs.deletion_token = 'NA'
+
+                ORDER BY
+                    rumahs.blok ASC,
+                    transaksi_details.periode_bulan ASC,
+                    transaksi_details.periode_tahun ASC
+            )
+
+            SELECT rumahs.id, rumahs.blok, rumahs.status_rumah, COALESCE(mr.periode_bulan, ?) AS 'periode_bulan', COALESCE(mr.periode_tahun, ?) AS 'periode_tahun',
+                CASE COUNT(mr.periode_bulan)
+                    WHEN 0 THEN 'Belum Bayar'
+                    WHEN 1 THEN 'Belum Lunas'
+                    WHEN 2 THEN 'Lunas'
+                END AS 'status_pembayaran'
+
+            FROM MonthlyRecord mr
+            RIGHT JOIN rumahs
+            ON rumahs.id = mr.rumah_id
+            AND mr.periode_bulan = ?
+            AND mr.periode_tahun = ?
+
+            WHERE rumahs.deletion_token = 'NA'
+            GROUP BY mr.periode_bulan, mr.periode_tahun, rumahs.blok, rumahs.id
+        ";
+
+
+        $results = DB::select($sql, [$periode_bulan, $periode_tahun, $periode_bulan, $periode_tahun]);
+
+        return self::paginate($results, $page, $perPage);
+    }
+
+    public static function paginate(array $results, int $page, int $perPage): array
+    {
+        $collection = collect($results);
+
+        $total = $collection->count();
+        $currentPage = $page ?: 1;
+        $offset = ($currentPage - 1) * $perPage;
+
+        $items = $collection->slice($offset, $perPage)->values();
+
+        return [
+            'results' => $items,
+            'total' => $total,
+            'per_page' => $perPage,
+            'current_page' => $currentPage,
+            'last_page' => ceil($total / $perPage)
+        ];
+    }
 }
