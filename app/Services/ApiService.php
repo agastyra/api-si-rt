@@ -182,7 +182,7 @@ class ApiService
                     transaksi_details.periode_tahun ASC
             )
 
-            SELECT rumahs.id, rumahs.blok, rumahs.status_rumah, COALESCE(mr.periode_bulan, ?) AS 'periode_bulan', COALESCE(mr.periode_tahun, ?) AS 'periode_tahun',
+            SELECT rumahs.id, rumahs.blok, COALESCE(mr.periode_bulan, ?) AS 'periode_bulan', COALESCE(mr.periode_tahun, ?) AS 'periode_tahun',
                 CASE COUNT(mr.periode_bulan)
                     WHEN 0 THEN 'Belum Bayar'
                     WHEN 1 THEN 'Belum Lunas'
